@@ -1,5 +1,6 @@
 package com.example.movieapp.ui.ui;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.example.movieapp.ui.adapter.NowPlayingMovieAdapter;
 import com.example.movieapp.ui.adapter.PopularMovieAdapter;
 import com.example.movieapp.ui.adapter.TopRatedMovieAdapter;
 import com.example.movieapp.ui.model.Movies;
+import com.example.movieapp.ui.utils.CommonUtils;
 import com.example.movieapp.ui.utils.Constants;
 import com.example.movieapp.ui.viewmodel.HomeViewModel;
 
@@ -35,6 +37,7 @@ public class HomeFragment extends Fragment{
     private ArrayList<Movies> popularMoviesList;
     private ArrayList<Movies> topRatedMoviesList;
     private ArrayList<Movies> nowPlayingMoviesList;
+    private ProgressDialog progressDialog;
 
     LinearLayoutManager popularManager;
     LinearLayoutManager topRatedManager;
@@ -43,7 +46,9 @@ public class HomeFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        showLoading();
 
         popularRecycler = view.findViewById(R.id.popular_recycler_view);
         topRatedRecycler = view.findViewById(R.id.top_rated_recycler_view);
@@ -74,17 +79,26 @@ public class HomeFragment extends Fragment{
         nowPlayingRecycler.setAdapter(nowPlayingMovieAdapter);
 
 
-        homeViewModel.getPopularMovies();
+        if (CommonUtils.isNetworkAvailable()) {
+            homeViewModel.getPopularMovies();
+        }else {
+            homeViewModel.getPopularOffline();
+        }
         homeViewModel.popularMovieList.observe(this, new Observer<ArrayList<Movies>>() {
             @Override
             public void onChanged(ArrayList<Movies> movies) {
+                hideLoading();
                 popularMoviesList.addAll(movies);
                 popularMovieAdapter.setPopularMovies(popularMoviesList);
                 popularMovieAdapter.notifyDataSetChanged();
             }
         });
 
-        homeViewModel.getTopRatedMovies();
+        if (CommonUtils.isNetworkAvailable()) {
+            homeViewModel.getTopRatedMovies();
+        }else {
+            homeViewModel.getTopratedOffline();
+        }
         homeViewModel.topRatedMovieList.observe(this, new Observer<ArrayList<Movies>>() {
             @Override
             public void onChanged(ArrayList<Movies> movies) {
@@ -94,7 +108,11 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        homeViewModel.getNowPlayingMovies();
+        if (CommonUtils.isNetworkAvailable()) {
+            homeViewModel.getNowPlayingMovies();
+        }else {
+            homeViewModel.getNowplayingOffline();
+        }
         homeViewModel.nowPlayingMovieList.observe(this, new Observer<ArrayList<Movies>>() {
             @Override
             public void onChanged(ArrayList<Movies> movies) {
@@ -130,7 +148,7 @@ public class HomeFragment extends Fragment{
             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                     && totalItemCount >= Constants.ITEMS_PAR_PAGE) {
 
-                if (!homeViewModel.isPopularDataLoading) {
+                if (!homeViewModel.isPopularDataLoading && CommonUtils.isNetworkAvailable()) {
                     homeViewModel.getPopularMovies();
                 }
             }
@@ -155,7 +173,7 @@ public class HomeFragment extends Fragment{
             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                     && totalItemCount >= Constants.ITEMS_PAR_PAGE) {
 
-                if (!homeViewModel.isTopRatedDataLoading) {
+                if (!homeViewModel.isTopRatedDataLoading && CommonUtils.isNetworkAvailable()) {
                     homeViewModel.getTopRatedMovies();
                 }
             }
@@ -180,10 +198,22 @@ public class HomeFragment extends Fragment{
             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                     && totalItemCount >= Constants.ITEMS_PAR_PAGE) {
 
-                if (!homeViewModel.isNowPlayingDataLoading) {
+                if (!homeViewModel.isNowPlayingDataLoading && CommonUtils.isNetworkAvailable()) {
                     homeViewModel.getNowPlayingMovies();
                 }
             }
         }
     };
+
+
+    private void showLoading() {
+        hideLoading();
+        progressDialog = CommonUtils.showLoadingDialog(getContext());
+    }
+
+    private void hideLoading() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 }

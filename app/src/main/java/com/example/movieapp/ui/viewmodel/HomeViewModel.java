@@ -14,10 +14,12 @@ import com.example.movieapp.ui.helper.DataFetchingListener;
 import com.example.movieapp.ui.model.MovieResponse;
 import com.example.movieapp.ui.model.Movies;
 import com.example.movieapp.ui.repository.ApiRepository;
+import com.example.movieapp.ui.utils.Constants;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
-public class HomeViewModel extends AndroidViewModel/* implements CallbackResponse*/ {
+public class HomeViewModel extends AndroidViewModel{
 
     public MutableLiveData<ArrayList<Movies>> popularMovieList = new MutableLiveData<>();
     public MutableLiveData<ArrayList<Movies>> topRatedMovieList = new MutableLiveData<>();
@@ -32,14 +34,15 @@ public class HomeViewModel extends AndroidViewModel/* implements CallbackRespons
     private int toprated_page_no = 0;
     private int now_playing_page_no = 0;
 
-    ApiRepository apiRepository;
-
     public HomeViewModel(@NonNull Application application) {
         super(application);
     }
 
     public void getPopularMovies() {
         isPopularDataLoading = true;
+        if (popular_page_no == 0) {
+            ApiHelper.deleteAllByCategory(Constants.POPULAR);
+        }
         ApiHelper.fetchPopularMovies(popular_page_no+1, new DataFetchingListener<MovieResponse>() {
             @Override
             public void onDataFetched(MovieResponse response) {
@@ -55,7 +58,29 @@ public class HomeViewModel extends AndroidViewModel/* implements CallbackRespons
             }
         });
     }
+
+    public void getPopularOffline() {
+        ApiHelper.getMovieResponses(Constants.POPULAR, new DataFetchingListener<ArrayList<MovieResponse>>() {
+            @Override
+            public void onDataFetched(ArrayList<MovieResponse> response) {
+                ArrayList<Movies> movies = new ArrayList<>();
+                for (MovieResponse movieResponse : response) {
+                    movies.addAll(movieResponse.getMovies());
+                }
+                popularMovieList.setValue(movies);
+            }
+
+            @Override
+            public void onFailed(int status) {
+
+            }
+        });
+    }
+
     public void getTopRatedMovies() {
+        if (toprated_page_no == 0) {
+            ApiHelper.deleteAllByCategory(Constants.TOPRATED);
+        }
         isTopRatedDataLoading = true;
         ApiHelper.fetchTopRatedMovies(toprated_page_no+1, new DataFetchingListener<MovieResponse>() {
             @Override
@@ -72,7 +97,29 @@ public class HomeViewModel extends AndroidViewModel/* implements CallbackRespons
             }
         });
     }
+
+    public void getTopratedOffline() {
+        ApiHelper.getMovieResponses(Constants.TOPRATED, new DataFetchingListener<ArrayList<MovieResponse>>() {
+            @Override
+            public void onDataFetched(ArrayList<MovieResponse> response) {
+                ArrayList<Movies> movies = new ArrayList<>();
+                for (MovieResponse movieResponse : response) {
+                    movies.addAll(movieResponse.getMovies());
+                }
+                topRatedMovieList.setValue(movies);
+            }
+
+            @Override
+            public void onFailed(int status) {
+
+            }
+        });
+    }
+
     public void getNowPlayingMovies() {
+        if (now_playing_page_no == 0) {
+            ApiHelper.deleteAllByCategory(Constants.NOW_PLAYING);
+        }
         isNowPlayingDataLoading = true;
         ApiHelper.fetchNowPlayingMovies(now_playing_page_no+1, new DataFetchingListener<MovieResponse>() {
             @Override
@@ -86,6 +133,26 @@ public class HomeViewModel extends AndroidViewModel/* implements CallbackRespons
             public void onFailed(int status) {
                 isNowPlayingDataLoading = false;
                 failedMessage.setValue("No data updated. Something went wrong!");
+            }
+        });
+    }
+
+
+
+    public void getNowplayingOffline() {
+        ApiHelper.getMovieResponses(Constants.NOW_PLAYING, new DataFetchingListener<ArrayList<MovieResponse>>() {
+            @Override
+            public void onDataFetched(ArrayList<MovieResponse> response) {
+                ArrayList<Movies> movies = new ArrayList<>();
+                for (MovieResponse movieResponse : response) {
+                    movies.addAll(movieResponse.getMovies());
+                }
+                nowPlayingMovieList.setValue(movies);
+            }
+
+            @Override
+            public void onFailed(int status) {
+
             }
         });
     }

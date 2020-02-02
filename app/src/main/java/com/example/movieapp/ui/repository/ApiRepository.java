@@ -17,73 +17,73 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ApiRepository implements CallbackResponse {
-
-    CallbackResponse callbackResponse;
-    DBManager dbManager;
-    MovieApi movieApi;
-    private ArrayList<Movies> popularList;
-    Movies popular;
-    private static ApiClientOld apiClientOld;
-
-    public ApiRepository(CallbackResponse callbackResponse) {
-        this.callbackResponse = callbackResponse;
-        dbManager = new DBManager(this);
-        apiClientOld = ApiClientOld.getInstance();
-    }
-
-    public void getPopularMovies(int page, final OnGetMoviesCallback callback) {
-
-        movieApi.getPopularMovies(URLs.API_KEY, URLs.LANGUAGE, page)
-                .enqueue(new Callback<MovieResponse>() {
-
-                    @Override
-                    public void onResponse(@NonNull Call<MovieResponse> call, @NonNull Response<MovieResponse> response) {
-                        if (response.isSuccessful()) {
-
-                            MovieResponse moviesResponse = response.body();
-
-                            if (moviesResponse != null && moviesResponse.getMovies() != null) {
-                                callback.onSuccess(moviesResponse.getPage(),moviesResponse.getMovies());
-                                callbackResponse.onResponse(moviesResponse.getMovies());
-                            } else {
-                                callback.onError();
-                            }
-
-                        } else {
-                            callback.onError();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
-                        callback.onError();
-                    }
-                });
-
-    }
-
-    public void addFavorite(Movies movies){
-        dbManager.addFavorite(movies);
-    }
-
-    public void deleteFavorite(int id){
-        dbManager.deleteFavorite(id);
-    }
-
-    public boolean checkExist(String search){
-        return dbManager.exists(search);
-    }
-
-
-
-
-
-    @Override
-    public void onResponse(Object o) {
-
-        if(o instanceof ArrayList){
-            callbackResponse.onResponse(popularList);
-        }
-    }
+public class ApiRepository /*implements CallbackResponse */{
+//
+//    CallbackResponse callbackResponse;
+//    DBManager dbManager;
+//    MovieApi movieApi;
+//    private ArrayList<Movies> popularList;
+//    Movies popular;
+//    private static ApiClientOld apiClientOld;
+//
+//    public ApiRepository(CallbackResponse callbackResponse) {
+//        this.callbackResponse = callbackResponse;
+//        dbManager = new DBManager(this);
+//        apiClientOld = ApiClientOld.getInstance();
+//    }
+//
+//    public void getPopularMovies(int page, final OnGetMoviesCallback callback) {
+//
+//        movieApi.getPopularMovies(URLs.API_KEY, URLs.LANGUAGE, page)
+//                .enqueue(new Callback<MovieResponse>() {
+//
+//                    @Override
+//                    public void onResponse(@NonNull Call<MovieResponse> call, @NonNull Response<MovieResponse> response) {
+//                        if (response.isSuccessful()) {
+//
+//                            MovieResponse moviesResponse = response.body();
+//
+//                            if (moviesResponse != null && moviesResponse.getMovies() != null) {
+//                                callback.onSuccess(moviesResponse.getPage(),moviesResponse.getMovies());
+//                                callbackResponse.onResponse(moviesResponse.getMovies());
+//                            } else {
+//                                callback.onError();
+//                            }
+//
+//                        } else {
+//                            callback.onError();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+//                        callback.onError();
+//                    }
+//                });
+//
+//    }
+//
+//    public void addFavorite(Movies movies){
+//        dbManager.addFavorite(movies);
+//    }
+//
+//    public void deleteFavorite(int id){
+//        dbManager.deleteFavorite(id);
+//    }
+//
+//    public boolean checkExist(String search){
+//        return dbManager.exists(search);
+//    }
+//
+//
+//
+//
+//
+//    @Override
+//    public void onResponse(Object o) {
+//
+//        if(o instanceof ArrayList){
+//            callbackResponse.onResponse(popularList);
+//        }
+//    }
 }
