@@ -7,4 +7,5 @@ public class Constants {
     public static final String TOPRATED = "toprated";
     public static final String NOW_PLAYING = "nowplaying";
     public static final String UP_COMING = "upcoming";
+    public static final String SEARCH_TEXT = "searchtext";
 }

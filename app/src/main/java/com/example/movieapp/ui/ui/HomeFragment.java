@@ -1,10 +1,15 @@
 package com.example.movieapp.ui.ui;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,6 +33,8 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment{
 
     private HomeViewModel homeViewModel;
+    EditText etSearch;
+    ImageView imgSearch;
     RecyclerView popularRecycler;
     RecyclerView topRatedRecycler;
     RecyclerView nowPlayingRecycler;
@@ -50,6 +57,8 @@ public class HomeFragment extends Fragment{
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         showLoading();
 
+        etSearch = view.findViewById(R.id.etSearch);
+        imgSearch = view.findViewById(R.id.img_search);
         popularRecycler = view.findViewById(R.id.popular_recycler_view);
         topRatedRecycler = view.findViewById(R.id.top_rated_recycler_view);
         nowPlayingRecycler = view.findViewById(R.id.now_playing_recycler_view);
@@ -77,6 +86,19 @@ public class HomeFragment extends Fragment{
         nowPlayingRecycler.setLayoutManager(nowPlayingManager);
         nowPlayingRecycler.setItemAnimator(new DefaultItemAnimator());
         nowPlayingRecycler.setAdapter(nowPlayingMovieAdapter);
+
+        imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (CommonUtils.isNetworkAvailable()) {
+                    if (!TextUtils.isEmpty(etSearch.getText().toString())) {
+                        startActivity(new Intent(getActivity(), SearchActivity.class).putExtra(Constants.SEARCH_TEXT, etSearch.getText().toString()));
+                    }
+                }else {
+                    Toast.makeText(getContext(), "No internet connection!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
         if (CommonUtils.isNetworkAvailable()) {
@@ -119,6 +141,14 @@ public class HomeFragment extends Fragment{
                 nowPlayingMoviesList.addAll(movies);
                 nowPlayingMovieAdapter.setNowPlayingMovies(nowPlayingMoviesList);
                 nowPlayingMovieAdapter.notifyDataSetChanged();
+            }
+        });
+
+        homeViewModel.failedMessage.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                hideLoading();
+                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -69,6 +69,14 @@ public class UpcomingFragment extends Fragment {
 
             }
         });
+
+        upcomingViewModel.failedMessage.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                hideLoading();
+                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+            }
+        });
         upcomingRecyclerview.addOnScrollListener(onScrollListener);
         return view;
     }

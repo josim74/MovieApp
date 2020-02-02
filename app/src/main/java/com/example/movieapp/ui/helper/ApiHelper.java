@@ -116,6 +116,30 @@ public class ApiHelper {
             }
         });
     }
+    public static void getSearchedItems(String searchText, final DataFetchingListener<ArrayList<Movies>> listener) {
+        IApiClient iApiClient = ApiClient.getClient().create(IApiClient.class);
+        Call<JsonObject> call = iApiClient.search(URLs.API_KEY, searchText);
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.code() == 200) {
+                    if (listener != null) {
+                        insertMovieResponse(response.body(), Constants.UP_COMING);
+                        ArrayList<Movies> movies = new Gson().fromJson(response.body().get("results"), new TypeToken<ArrayList<Movies>>() {}.getType());
+                        listener.onDataFetched(movies);
+                    }
+                } else {
+                    listener.onFailed(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                listener.onFailed(0);
+            }
+        });
+    }
 
     public static void insertMovieResponse(JsonObject jsonObject, String category) {
         DBHelper helper = new DBHelper(App.context);

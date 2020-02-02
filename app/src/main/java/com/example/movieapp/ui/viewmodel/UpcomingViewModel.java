@@ -34,7 +34,7 @@ public class UpcomingViewModel extends ViewModel {
             @Override
             public void onFailed(int status) {
                 isDataLoading = false;
-                failedMessage.setValue("Not updated. Something went wrong!");
+                failedMessage.setValue("Something went wrong!");
             }
         });
     }

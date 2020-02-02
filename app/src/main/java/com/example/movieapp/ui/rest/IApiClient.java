@@ -1,14 +1,8 @@
 package com.example.movieapp.ui.rest;
 
-import com.example.movieapp.ui.model.MovieResponse;
 import com.example.movieapp.ui.utils.URLs;
 import com.google.gson.JsonObject;
-
-import java.util.HashMap;
-
-import okhttp3.MultipartBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -27,7 +21,7 @@ public interface IApiClient {
             @Query("language") String language,
             @Query("page") int page
     );
-    @GET(URLs.POPULAR_MOVIES)
+    @GET(URLs.MOVIES_NOW_PLAYING)
     Call<JsonObject> getNowPlayingMovies(
             @Query("api_key") String apiKey,
             @Query("language") String language,
@@ -38,5 +32,11 @@ public interface IApiClient {
             @Query("api_key") String apiKey,
             @Query("language") String language,
             @Query("page") int page
+    );
+
+    @GET(URLs.SEARCH)
+    Call<JsonObject> search(
+            @Query("api_key") String apiKey,
+            @Query("query") String language
     );
 }

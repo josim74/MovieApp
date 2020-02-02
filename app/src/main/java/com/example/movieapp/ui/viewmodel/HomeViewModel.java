@@ -54,7 +54,7 @@ public class HomeViewModel extends AndroidViewModel{
             @Override
             public void onFailed(int status) {
                 isPopularDataLoading = false;
-                failedMessage.setValue("No data updated. Something went wrong!");
+                failedMessage.setValue("Something went wrong!");
             }
         });
     }
