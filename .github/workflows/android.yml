@@ -26,4 +26,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: |
+        ANDROID_HOME=/home/josim/Android/sdk
+        export PATH=$PATH:$ANDROID_HOME/platform-tools
+        ./gradlew build
